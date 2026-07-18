@@ -1,52 +1,34 @@
-/**
- * Overlay UI Injector
- * 
- * Responsibilities:
- * 1. Create a Shadow DOM container to isolate our CSS from the host application.
- * 2. Inject the modern, glassmorphic UI into the Shadow Root.
- * 3. Handle interactions (expanding/collapsing the sidebar, rendering markdown).
- */
-
-const OVERLAY_CONTAINER_ID = 'jit-workflow-overlay-root';
-
-export function injectOverlay(rulesData: any[]) {
-  // Prevent duplicate injections
-  if (document.getElementById(OVERLAY_CONTAINER_ID)) {
-    updateOverlayContent(rulesData);
-    return;
-  }
-
-  // Create host element
-  const host = document.createElement('div');
-  host.id = OVERLAY_CONTAINER_ID;
-  host.style.position = 'fixed';
-  host.style.top = '0';
-  host.style.right = '0';
-  host.style.width = '0'; // Width handled by inner container
-  host.style.height = '100vh';
-  host.style.zIndex = '2147483647'; // Max z-index to guarantee top level
-  host.style.pointerEvents = 'none'; // Let clicks pass through empty space
-
-  // Attach Shadow DOM (open so we can inspect it during dev, but closed in prod)
-  const shadowRoot = host.attachShadow({ mode: 'open' });
-
-  // Create UI
-  const wrapper = document.createElement('div');
-  wrapper.className = 'jit-overlay-wrapper';
-  
-  // High-end glassmorphism styling
-  const style = document.createElement('style');
-  style.textContent = `
+(() => {
+  // src/extension/overlay_ui/injector.ts
+  var OVERLAY_CONTAINER_ID = "jit-workflow-overlay-root";
+  function injectOverlay(rulesData) {
+    if (document.getElementById(OVERLAY_CONTAINER_ID)) {
+      updateOverlayContent(rulesData);
+      return;
+    }
+    const host = document.createElement("div");
+    host.id = OVERLAY_CONTAINER_ID;
+    host.style.position = "fixed";
+    host.style.top = "0";
+    host.style.right = "0";
+    host.style.width = "0";
+    host.style.height = "100vh";
+    host.style.zIndex = "2147483647";
+    host.style.pointerEvents = "none";
+    const shadowRoot = host.attachShadow({ mode: "open" });
+    const wrapper = document.createElement("div");
+    wrapper.className = "jit-overlay-wrapper";
+    const style = document.createElement("style");
+    style.textContent = `
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
     :host {
-      --jit-primary: #800000; /* Maroon */
-      --jit-primary-hover: #4a0000;
-      --jit-accent: #D4AF37; /* Gold */
-      --jit-bg: rgba(10, 10, 10, 0.85); /* Black */
+      --jit-primary: #6366f1;
+      --jit-primary-hover: #4f46e5;
+      --jit-bg: rgba(17, 24, 39, 0.85);
       --jit-border: rgba(255, 255, 255, 0.1);
-      --jit-text: #ffffff; /* White */
-      --jit-text-muted: #D4AF37; /* Gold for muted/accents */
+      --jit-text: #f9fafb;
+      --jit-text-muted: #9ca3af;
     }
 
     .jit-overlay-wrapper {
@@ -175,9 +157,7 @@ export function injectOverlay(rulesData: any[]) {
       background: rgba(255,255,255,0.3);
     }
   `;
-
-  // HTML Structure
-  wrapper.innerHTML = `
+    wrapper.innerHTML = `
     <div class="jit-header">
       <h2 class="jit-title">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
@@ -192,48 +172,33 @@ export function injectOverlay(rulesData: any[]) {
       <!-- Dynamic Content injected here -->
     </div>
   `;
-
-  shadowRoot.appendChild(style);
-  shadowRoot.appendChild(wrapper);
-  document.body.appendChild(host);
-
-  // Render Data
-  updateOverlayContent(rulesData, shadowRoot);
-
-  // Interactions
-  const closeBtn = shadowRoot.querySelector('.jit-close-btn');
-  closeBtn?.addEventListener('click', () => removeOverlay());
-
-  // Trigger animation next frame
-  requestAnimationFrame(() => {
-    wrapper.classList.add('visible');
-  });
-}
-
-export function updateOverlayContent(rulesData: any[], shadowRoot?: ShadowRoot) {
-  const root = shadowRoot || document.getElementById(OVERLAY_CONTAINER_ID)?.shadowRoot;
-  if (!root) return;
-
-  const contentArea = root.getElementById('jit-content-area');
-  if (!contentArea) return;
-
-  // Clear existing
-  contentArea.innerHTML = '';
-
-  // Render cards based on matched rules
-  rulesData.forEach(rule => {
-    const card = document.createElement('div');
-    card.className = 'jit-rule-card';
-    card.innerHTML = `
-      <h3 class="jit-rule-title">${rule.title || 'Workflow Guidance'}</h3>
+    shadowRoot.appendChild(style);
+    shadowRoot.appendChild(wrapper);
+    document.body.appendChild(host);
+    updateOverlayContent(rulesData, shadowRoot);
+    const closeBtn = shadowRoot.querySelector(".jit-close-btn");
+    closeBtn?.addEventListener("click", () => removeOverlay());
+    requestAnimationFrame(() => {
+      wrapper.classList.add("visible");
+    });
+  }
+  function updateOverlayContent(rulesData, shadowRoot) {
+    const root = shadowRoot || document.getElementById(OVERLAY_CONTAINER_ID)?.shadowRoot;
+    if (!root) return;
+    const contentArea = root.getElementById("jit-content-area");
+    if (!contentArea) return;
+    contentArea.innerHTML = "";
+    rulesData.forEach((rule) => {
+      const card = document.createElement("div");
+      card.className = "jit-rule-card";
+      card.innerHTML = `
+      <h3 class="jit-rule-title">${rule.title || "Workflow Guidance"}</h3>
       <p class="jit-rule-desc">Click here to view the approved standard operating procedure for this step.</p>
     `;
-    
-    card.addEventListener('click', () => {
-      // In production, this would expand to show full markdown / AI summary fetched from the DB
-      console.log('[JIT Overlay] Expanding rule:', rule.id);
-      card.innerHTML = `
-        <h3 class="jit-rule-title">${rule.title || 'Workflow Guidance'}</h3>
+      card.addEventListener("click", () => {
+        console.log("[JIT Overlay] Expanding rule:", rule.id);
+        card.innerHTML = `
+        <h3 class="jit-rule-title">${rule.title || "Workflow Guidance"}</h3>
         <p class="jit-rule-desc" style="color: var(--jit-text);">
           Welcome to the ${rule.applicationPattern} guidance module.<br/><br/>
           <strong>1.</strong> Review the current page state.<br/>
@@ -241,24 +206,22 @@ export function updateOverlayContent(rulesData: any[], shadowRoot?: ShadowRoot) 
           <em>Generated by Enterprise RAG Pipeline</em>
         </p>
       `;
+      });
+      contentArea.appendChild(card);
     });
-
-    contentArea.appendChild(card);
-  });
-}
-
-export function removeOverlay() {
-  const host = document.getElementById(OVERLAY_CONTAINER_ID);
-  if (host && host.shadowRoot) {
-    const wrapper = host.shadowRoot.querySelector('.jit-overlay-wrapper');
-    if (wrapper) {
-      wrapper.classList.remove('visible');
-      // Wait for CSS transition to finish before removing DOM node
-      setTimeout(() => {
+  }
+  function removeOverlay() {
+    const host = document.getElementById(OVERLAY_CONTAINER_ID);
+    if (host && host.shadowRoot) {
+      const wrapper = host.shadowRoot.querySelector(".jit-overlay-wrapper");
+      if (wrapper) {
+        wrapper.classList.remove("visible");
+        setTimeout(() => {
+          host.remove();
+        }, 400);
+      } else {
         host.remove();
-      }, 400);
-    } else {
-      host.remove();
+      }
     }
   }
-}
+})();

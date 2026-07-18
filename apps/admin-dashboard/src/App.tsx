@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 const styles = {
   container: {
     fontFamily: "'Inter', sans-serif",
-    backgroundColor: '#0f111a',
-    color: '#e2e8f0',
+    backgroundColor: '#0a0a0a', // Deep Black
+    color: '#ffffff', // White
     minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column' as const,
@@ -23,13 +23,13 @@ const styles = {
     fontSize: '24px',
     fontWeight: 600,
     margin: 0,
-    background: 'linear-gradient(90deg, #818cf8 0%, #c084fc 100%)',
+    background: 'linear-gradient(90deg, #D4AF37 0%, #FFDF00 100%)', // Gold
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
   },
   buttonPrimary: {
-    backgroundColor: '#6366f1',
-    color: '#ffffff',
+    backgroundColor: '#800000', // Maroon
+    color: '#ffffff', // White
     border: 'none',
     padding: '10px 20px',
     borderRadius: '8px',
@@ -37,7 +37,7 @@ const styles = {
     fontWeight: 500,
     cursor: 'pointer',
     transition: 'all 0.2s ease',
-    boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
+    boxShadow: '0 4px 12px rgba(128, 0, 0, 0.4)', // Maroon shadow
   },
   main: {
     padding: '48px',
@@ -144,7 +144,10 @@ export const Dashboard: React.FC = () => {
   return (
     <div style={styles.container}>
       <header style={styles.header}>
-        <h1 style={styles.title}>JIT Workflow Admin</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <img src="/JIT_Logo.png" alt="JIT Logo" width="40" height="40" />
+          <h1 style={styles.title}>JIT Workflow Admin</h1>
+        </div>
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           <span style={{ fontSize: '14px', color: '#94a3b8' }}>Workspace: Engineering</span>
           <button 
@@ -196,9 +199,9 @@ export const Dashboard: React.FC = () => {
 
       <main style={styles.main}>
         <aside style={styles.sidebar}>
-          <h3 style={{ margin: '0 0 24px 0', fontSize: '16px', color: '#e2e8f0' }}>Knowledge Base</h3>
+          <h3 style={{ margin: '0 0 24px 0', fontSize: '16px', color: '#ffffff' }}>Knowledge Base</h3>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <li style={{ color: '#818cf8', cursor: 'pointer', fontSize: '14px', fontWeight: 500 }}>All SOPs</li>
+            <li style={{ color: '#D4AF37', cursor: 'pointer', fontSize: '14px', fontWeight: 500 }}>All SOPs</li>
             <li style={{ color: '#94a3b8', cursor: 'pointer', fontSize: '14px' }}>Drafts</li>
             <li style={{ color: '#94a3b8', cursor: 'pointer', fontSize: '14px' }}>Archived</li>
             <li style={{ color: '#94a3b8', cursor: 'pointer', fontSize: '14px', marginTop: '24px' }}>Detection Rules</li>
