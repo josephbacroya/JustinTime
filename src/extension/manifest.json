@@ -23,9 +23,21 @@
       "run_at": "document_end"
     }
   ],
-  "action": {
-    "default_title": "JIT Overlay Settings"
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
   },
+  "action": {
+    "default_title": "JIT Overlay Settings",
+    "default_icon": "icon.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["JIT_Logo.png"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self';"
   }
