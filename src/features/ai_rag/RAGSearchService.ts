@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { Result } from '../../shared/core/Result';
+import OpenAI from 'openai';
 
 export interface SearchResult {
   articleId: string;
@@ -9,17 +10,28 @@ export interface SearchResult {
 
 export class RAGSearchService {
   private prisma: PrismaClient;
+  private openai: OpenAI;
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
+    this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || 'dummy_key' });
   }
 
   /**
    * Generates embedding for the query.
    */
   private async generateEmbedding(query: string): Promise<number[]> {
-    // Mocking API call to match dimensions of stored embeddings
-    return new Array(1536).fill(0).map(() => Math.random());
+    if (this.openai.apiKey === 'dummy_key') {
+      return new Array(1536).fill(0).map(() => Math.random());
+    }
+    
+    const response = await this.openai.embeddings.create({
+      model: "text-embedding-3-small",
+      input: query,
+      encoding_format: "float",
+    });
+
+    return response.data[0].embedding;
   }
 
   /**

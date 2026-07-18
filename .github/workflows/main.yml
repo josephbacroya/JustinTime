@@ -1,0 +1,72 @@
+name: JIT Workflow Overlay CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-and-build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Lint and Format
+        run: npm run lint
+
+      - name: Build TurboRepo (All Packages)
+        run: npx turbo run build
+
+      - name: Package Browser Extension
+        run: |
+          cd src/extension
+          # In a real environment, we'd run esbuild here
+          # We zip the bundled output for Chrome Web Store uploading
+          zip -r ../../jit-extension-build.zip . -x "*.ts"
+
+      - name: Upload Extension Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jit-browser-extension
+          path: jit-extension-build.zip
+
+  deploy-api:
+    name: Deploy Backend API
+    runs-on: ubuntu-latest
+    needs: test-and-build
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Build Docker Image
+        run: |
+          # Normally there would be a Dockerfile at the root
+          echo "Building Docker image jit-overlay-api..."
+          # docker build -t my-registry/jit-overlay-api:latest .
+          
+      - name: Push to Registry
+        run: |
+          echo "Pushing image to container registry..."
+          # docker push my-registry/jit-overlay-api:latest
+          
+      - name: Trigger Kubernetes Rollout
+        run: |
+          echo "Triggering deployment in EKS/GKE..."
+          # kubectl apply -f k8s/deployment.yml

@@ -1,22 +1,36 @@
 import { PrismaClient } from '@prisma/client';
 import { Result } from '../../shared/core/Result';
+import OpenAI from 'openai';
 
 export class EmbeddingService {
   private prisma: PrismaClient;
+  private openai: OpenAI;
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
+    // In production, instantiate this with process.env.OPENAI_API_KEY
+    this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || 'dummy_key' });
   }
 
   /**
    * Generates a vector embedding for a piece of text.
-   * In a real enterprise application, this would call an external API (e.g., OpenAI text-embedding-ada-002).
+   * Calls external OpenAI text-embedding-3-small API.
    */
   private async generateEmbedding(text: string): Promise<number[]> {
     console.log('[EmbeddingService] Generating embedding for text length:', text.length);
-    // Mocking an embedding generation of length 1536 (OpenAI standard)
-    // In production: const response = await openai.createEmbedding({ model: "text-embedding-3-small", input: text });
-    return new Array(1536).fill(0).map(() => Math.random());
+    
+    // Safety fallback for local MVP testing without real keys
+    if (this.openai.apiKey === 'dummy_key') {
+       return new Array(1536).fill(0).map(() => Math.random());
+    }
+
+    const response = await this.openai.embeddings.create({
+      model: "text-embedding-3-small",
+      input: text,
+      encoding_format: "float",
+    });
+
+    return response.data[0].embedding;
   }
 
   /**

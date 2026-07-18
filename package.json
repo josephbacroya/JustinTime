@@ -9,6 +9,8 @@
     "check-types": "turbo run check-types"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
     "esbuild": "^0.28.1",
     "prettier": "^3.7.4",
     "prisma": "^5.22.0",
@@ -29,6 +31,10 @@
     "packages/*"
   ],
   "dependencies": {
-    "@prisma/client": "^5.22.0"
+    "@prisma/client": "^5.22.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "openai": "^6.48.0"
   }
 }
