@@ -113,7 +113,7 @@ export const Dashboard: React.FC = () => {
     e.preventDefault();
     
     try {
-      const response = await fetch('http://localhost:3000/v1/articles', {
+      const response = await fetch('https://justintime-ivg1.onrender.com/v1/articles', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

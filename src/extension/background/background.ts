@@ -8,7 +8,7 @@
  * 4. Dispatch matched SOPs/guidance back to the content script for rendering.
  */
 
-const API_ENDPOINT = 'https://api.jitoverlay.enterprise/v1';
+const API_ENDPOINT = 'https://justintime-ivg1.onrender.com/v1';
 let cachedRules: any[] = [];
 let wsConnection: WebSocket | null = null;
 
