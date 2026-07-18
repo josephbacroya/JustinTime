@@ -105,7 +105,41 @@ const MOCK_SOPS = [
 ];
 
 export const Dashboard: React.FC = () => {
-  const [sops] = useState(MOCK_SOPS);
+  const [sops, setSops] = useState(MOCK_SOPS);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({ title: '', targetApp: '', content: '' });
+
+  const handleCreateSop = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      const response = await fetch('http://localhost:3000/v1/articles', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer valid_token' // Satisfy mock auth
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Prepend the new SOP to the table
+        setSops([{
+          id: Math.random(),
+          title: data.title,
+          targetApp: formData.targetApp,
+          status: data.status,
+          lastUpdated: 'Just now'
+        }, ...sops]);
+        
+        setIsModalOpen(false);
+        setFormData({ title: '', targetApp: '', content: '' });
+      }
+    } catch (error) {
+      console.error('Failed to create SOP:', error);
+    }
+  };
 
   return (
     <div style={styles.container}>
@@ -115,6 +149,7 @@ export const Dashboard: React.FC = () => {
           <span style={{ fontSize: '14px', color: '#94a3b8' }}>Workspace: Engineering</span>
           <button 
             style={styles.buttonPrimary}
+            onClick={() => setIsModalOpen(true)}
             onMouseOver={(e) => (e.currentTarget.style.transform = 'translateY(-2px)')}
             onMouseOut={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
           >
@@ -122,6 +157,42 @@ export const Dashboard: React.FC = () => {
           </button>
         </div>
       </header>
+
+      {isModalOpen && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50
+        }}>
+          <div style={{
+            background: '#1e293b', padding: '32px', borderRadius: '16px',
+            width: '400px', border: '1px solid rgba(255,255,255,0.1)'
+          }}>
+            <h2 style={{ margin: '0 0 24px 0', fontSize: '20px' }}>Create New SOP</h2>
+            <form onSubmit={handleCreateSop} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <input 
+                type="text" placeholder="SOP Title" required
+                value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})}
+                style={{ padding: '12px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }} 
+              />
+              <input 
+                type="text" placeholder="Target App (e.g. salesforce.com)" required
+                value={formData.targetApp} onChange={e => setFormData({...formData, targetApp: e.target.value})}
+                style={{ padding: '12px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }} 
+              />
+              <textarea 
+                placeholder="SOP Content / AI Instructions" required rows={4}
+                value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})}
+                style={{ padding: '12px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }} 
+              />
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '16px' }}>
+                <button type="button" onClick={() => setIsModalOpen(false)} style={{...styles.buttonPrimary, background: 'transparent', border: '1px solid #475569'}}>Cancel</button>
+                <button type="submit" style={styles.buttonPrimary}>Publish</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       <main style={styles.main}>
         <aside style={styles.sidebar}>
@@ -173,4 +244,5 @@ export const Dashboard: React.FC = () => {
     </div>
   );
 };
+
 export default Dashboard;

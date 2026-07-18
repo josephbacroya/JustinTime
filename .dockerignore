@@ -1,0 +1,7 @@
+node_modules
+dist
+apps/admin-dashboard
+src/extension
+.git
+.github
+*.md
