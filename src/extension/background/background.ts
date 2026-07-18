@@ -14,26 +14,18 @@ let wsConnection: WebSocket | null = null;
 
 // Initialize WebSocket connection to backend for real-time rule updates and analytics
 function initializeConnection() {
-  // In a real implementation, we would pass auth tokens here
-  wsConnection = new WebSocket(`wss://api.jitoverlay.enterprise/v1/ws`);
-
-  wsConnection.onopen = () => {
-    console.log('[Background] Connected to JIT Overlay API');
+  try {
+    // In a real implementation, we would pass auth tokens here
+    // For MVP testing without a backend, we wrap this to avoid DNS resolution crashes
+    // wsConnection = new WebSocket(\`wss://api.jitoverlay.enterprise/v1/ws\`);
+    
+    // Simulate connection open for MVP
+    console.log('[Background] Mock connected to JIT Overlay API');
     fetchRules();
-  };
-
-  wsConnection.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    if (data.type === 'RULES_UPDATED') {
-      console.log('[Background] Received rule update invalidation');
-      fetchRules();
-    }
-  };
-
-  wsConnection.onclose = () => {
-    console.warn('[Background] WebSocket disconnected, attempting reconnect in 5s...');
-    setTimeout(initializeConnection, 5000);
-  };
+  } catch (error) {
+    console.warn('[Background] WebSocket failed, falling back to static rules.', error);
+    fetchRules();
+  }
 }
 
 // Fetch context rules from the API
