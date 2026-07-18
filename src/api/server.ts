@@ -21,7 +21,7 @@ app.get('/health', (req: Request, res: Response) => {
 });
 
 // Secure API Routes (Protected by Mock Auth)
-app.use('/v1/*', requireAuth);
+app.use('/v1', requireAuth);
 
 app.get('/v1/rules', (req: Request, res: Response) => {
   // Mock response wrapping the RuleService logic for MVP
