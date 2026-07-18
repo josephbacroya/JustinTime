@@ -11,6 +11,7 @@
     "db:deploy": "prisma migrate deploy --schema=src/shared/infrastructure/database/schema.prisma"
   },
   "devDependencies": {
+    "@types/chrome": "^0.2.2",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "esbuild": "^0.28.1",

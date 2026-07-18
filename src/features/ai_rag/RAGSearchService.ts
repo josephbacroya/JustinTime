@@ -62,7 +62,7 @@ export class RAGSearchService {
       `;
 
       // Transform raw SQL result to typed response
-      const searchResults: SearchResult[] = results.map(row => ({
+      const searchResults: SearchResult[] = results.map((row: any) => ({
         articleId: row.id,
         title: row.title,
         // distance is 0 to 2 (0 being perfect match). Convert to a 0-1 similarity score.

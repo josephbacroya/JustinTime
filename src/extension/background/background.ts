@@ -66,7 +66,7 @@ async function fetchRules() {
 }
 
 // Listen for messages from Content Scripts
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message: any, sender: chrome.runtime.MessageSender, sendResponse: any) => {
   if (message.type === 'CONTEXT_UPDATE') {
     const { url, domSelectors } = message.payload;
     
