@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  extensions = [vector]
+}
+
+model Tenant {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  users       User[]
+  workspaces  Workspace[]
+  
+  @@map("tenants")
+}
+
+model User {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String      @db.Uuid
+  email       String      @unique
+  role        String      @default("USER") // ADMIN, EDITOR, USER
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  @@map("users")
+}
+
+model Workspace {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String      @db.Uuid
+  name        String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  articles    KnowledgeArticle[]
+  rules       ContextRule[]
+  
+  @@map("workspaces")
+}
+
+model KnowledgeArticle {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId String      @db.Uuid
+  title       String
+  content     Json
+  status      String      @default("DRAFT") // DRAFT, PUBLISHED, ARCHIVED
+  version     Int         @default(1)
+  
+  // Vector embedding for semantic search using pgvector
+  // 1536 is standard for OpenAI's text-embedding-ada-002 or text-embedding-3-small
+  embedding   Unsupported("vector(1536)")? 
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  rules       ContextRule[]
+  
+  @@map("knowledge_articles")
+}
+
+model ContextRule {
+  id                  String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId         String      @db.Uuid
+  knowledgeArticleId  String      @db.Uuid
+  applicationPattern  String      // e.g., "salesforce.com", "jira.atlassian.com"
+  urlPattern          String?     // e.g., "/lightning/r/Opportunity/*"
+  domSelectors        Json?       // e.g., ["#submit-button", ".workflow-step-2"]
+  
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  
+  workspace           Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  article             KnowledgeArticle @relation(fields: [knowledgeArticleId], references: [id], onDelete: Cascade)
+  
+  @@map("context_rules")
+}
