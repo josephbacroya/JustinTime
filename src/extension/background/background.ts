@@ -40,9 +40,23 @@ async function fetchRules() {
       {
         id: 'rule_1',
         applicationPattern: 'salesforce.com',
-        urlPattern: '.*\/lightning\/r\/Opportunity\/.*',
+        urlPattern: '.*\\/lightning\\/r\\/Opportunity\\/.*',
         articleId: 'art_123',
         title: 'Opportunity Creation SOP'
+      },
+      {
+        id: 'rule_2',
+        applicationPattern: 'google.com',
+        urlPattern: '.*google\\.com.*',
+        articleId: 'art_456',
+        title: 'Company Search Guidelines'
+      },
+      {
+        id: 'rule_3',
+        applicationPattern: 'github.com',
+        urlPattern: '.*github\\.com.*',
+        articleId: 'art_789',
+        title: 'Code Review Standards'
       }
     ];
     console.log('[Background] Rules cached successfully.', cachedRules.length);
