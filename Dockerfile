@@ -1,5 +1,5 @@
-# Use official Node.js 18 image as a build environment
-FROM node:18-bullseye-slim AS builder
+# Use official Node.js 22 image as a build environment
+FROM node:22-bookworm-slim AS builder
 
 WORKDIR /app
 
@@ -20,12 +20,12 @@ COPY . .
 RUN npx prisma generate --schema=src/shared/infrastructure/database/schema.prisma
 
 # Build the TypeScript code (using esbuild for speed)
-RUN npx esbuild src/api/server.ts --bundle --platform=node --target=node18 --outfile=dist/api/server.js
+RUN npx esbuild src/api/server.ts --bundle --platform=node --target=node22 --outfile=dist/api/server.js
 
 # -----------------------------------------------------
 # Production Environment
 # -----------------------------------------------------
-FROM node:18-bullseye-slim AS runner
+FROM node:22-bookworm-slim AS runner
 
 WORKDIR /app
 
