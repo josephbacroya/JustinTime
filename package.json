@@ -7,7 +7,7 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "build:api": "esbuild src/api/server.ts --bundle --platform=node --target=node18 --outfile=dist/api/server.js",
+    "build:api": "esbuild src/api/server.ts --bundle --platform=node --target=node22 --outfile=dist/api/server.js",
     "db:deploy": "prisma migrate deploy --schema=src/shared/infrastructure/database/schema.prisma"
   },
   "devDependencies": {
@@ -24,12 +24,6 @@
   },
   "engines": {
     "node": ">=18"
-  },
-  "devEngines": {
-    "packageManager": {
-      "name": "npm",
-      "version": "11.11.0"
-    }
   },
   "workspaces": [
     "apps/*",
